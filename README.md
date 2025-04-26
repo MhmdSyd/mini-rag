@@ -53,9 +53,19 @@ $ uvicorn main:app --reload --host 0.0.0.0 --port 5000
 $ http://127.0.0.1:8080/docs
 ```
 
+## Run Docker Compose Service:
+
+```bash
+$ cd docker
+$ cp .env.example .env
+```
+
+- Update `.env` with your credentials.
 
 ## Installing mongoDB docker service:
 
 ```bash
 $ docker-compose -f 'docker compose filename.yml' up -d --build
 ```
+
+
