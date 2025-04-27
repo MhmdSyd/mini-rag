@@ -18,7 +18,7 @@ class ProjectModel(BaseDataModel):
         all_collection = await self.db_client.list_collection_names()
         if DataBaseEnum.COLLECTION_PROJECT_NAME.value not in all_collection:
             self.collection = self.db_client[DataBaseEnum.COLLECTION_PROJECT_NAME.value]
-            indexes = ProjectModel.get_indexes()
+            indexes = Project.get_indexes()
             for indx in indexes:
                 await self.collection.create_index(
                     indx['key'],
@@ -67,16 +67,3 @@ class ProjectModel(BaseDataModel):
             )
 
         return projects, total_pages
-    
-    @classmethod
-    def get_indexes(cls):
-        return [
-            {
-                'key': [
-                    ('project_id', 1)
-                ],
-                'name': 'project_id_index_1',
-                'unique': True
-            }
-
-        ]

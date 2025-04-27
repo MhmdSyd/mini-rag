@@ -20,7 +20,7 @@ class ChunkModel(BaseDataModel):
         all_collection = await self.db_client.list_collection_names()
         if DataBaseEnum.COLLECTION_CHUNK_NAME.value not in all_collection:
             self.collection = self.db_client[DataBaseEnum.COLLECTION_CHUNK_NAME.value]
-            indexes = ChunkModel.get_indexes()
+            indexes = DataChunk.get_indexes()
             for indx in indexes:
                 await self.collection.create_index(
                     indx['key'],
@@ -66,16 +66,4 @@ class ChunkModel(BaseDataModel):
 
         return result.deleted_count
 
-    @classmethod
-    def get_indexes(cls):
-        return [
-            {
-                'key': [
-                    ("chunk_project_id", 1),
-                ],
-                'name': 'chunk_project_id_index_1',
-                'unique': False
-            }
-
-        ]
 
