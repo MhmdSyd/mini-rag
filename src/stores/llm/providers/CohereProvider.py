@@ -1,5 +1,5 @@
-from stores.LLMInterface import LLMInterface
-from stores.LLMEnums  import CoHereEnums, DocumentTypeEnum
+from ..LLMInterface import LLMInterface
+from ..LLMEnums import CoHereEnums, DocumentTypeEnum
 import cohere
 import logging
 
@@ -35,7 +35,7 @@ class CoHereProvider(LLMInterface):
     def process_text(self, text: str):
         return text.strip()[:self.default_input_max_characters]
     
-    def generate_text(self, prompt: str, chat_history: list=[], max_output_tokens: int=None,
+    def generation_text(self, prompt: str, chat_history: list=[], max_output_tokens: int=None,
                             temperature: float = None):
 
         if not self.client:
