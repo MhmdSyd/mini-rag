@@ -13,7 +13,7 @@ import os
 import aiofiles
 import logging
 
-from .schemes.data import ProcessRequest
+from .schemes.data import ProcessRequest, DeleteRequest
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -212,5 +212,120 @@ async def process_data(request: Request, project_id: str, process_request: Proce
             "inserted_chunks": no_records,
             "processed_files": no_files
 
+        }
+    )
+
+@data_router.delete("/delete-asset/{project_id}")
+async def delete_project(request: Request, project_id: str, delete_request: DeleteRequest):
+    file_id = delete_request.file_id
+
+    project_model = await ProjectModel.create_instance(
+        db_client=request.app.db_client
+    )
+
+    project = await project_model.get_project(project_id=project_id)
+
+    if project is None:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'signal': ResponseSignal.PROJECT_NOT_FOUND.value,
+            }
+        )
+    
+    chunk_model = await ChunkModel.create_instance(
+            db_client=request.app.db_client
+        )
+
+
+    asset_model = await AssetModel.create_instance(
+            db_client=request.app.db_client
+        )
+    
+
+    if file_id is None or len(file_id) == 0:
+
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'signal': ResponseSignal.ASSET_NAME_ERROR.value,
+            }
+        )
+    
+    asset = await asset_model.get_asset_record(asset_project_id=project.get_id(), asset_name=file_id)
+    if asset is None:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'signal': ResponseSignal.ASSET_NOT_FOUND.value,
+            }
+        )
+
+
+    no_deleted_chunks = await chunk_model.delete_project_chunks(
+        project_id=project.get_id(),
+        asset_id=asset.get_id(),
+    )
+
+    no_deleted_assets = await asset_model.delete_project_assets(
+        project_id=project.get_id(),
+        asset_name=file_id,
+    )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            'signal': ResponseSignal.ASSET_DELETED_SUCCESS.value,
+            'no_deleted_chunks': no_deleted_chunks,
+            'no_deleted_assets': no_deleted_assets,
+            'no_deleted_project': 0
+        }
+    )
+
+@data_router.delete("/delete-project/{project_id}")
+async def delete_project(request: Request, project_id: str):
+
+    project_model = await ProjectModel.create_instance(
+        db_client=request.app.db_client
+    )
+
+    project = await project_model.get_project(project_id=project_id)
+
+    if project is None:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                'signal': ResponseSignal.PROJECT_NOT_FOUND.value,
+            }
+        )
+    
+    chunk_model = await ChunkModel.create_instance(
+            db_client=request.app.db_client
+        )
+    
+    asset_model = await AssetModel.create_instance(
+            db_client=request.app.db_client
+        )
+    
+
+    no_deleted_chunks = await chunk_model.delete_project_chunks(
+        project_id=project.get_id(),
+    )
+
+    no_deleted_assets = await asset_model.delete_project_assets(
+        project_id=project.get_id(),
+    )
+
+    no_deleted_project = await project_model.delete_project(
+        project_id=project.project_id,
+    )
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            'signal': ResponseSignal.Project_DELETED_SUCCESS.value,
+            'no_deleted_chunks': no_deleted_chunks,
+            'no_deleted_assets': no_deleted_assets,
+            'no_deleted_project': no_deleted_project
         }
     )

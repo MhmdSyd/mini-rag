@@ -55,3 +55,19 @@ class AssetModel(BaseDataModel):
             return Asset(**record)
         
         return None
+    
+    async def delete_project_assets(self, project_id: ObjectId, asset_name: str=None):
+        
+        if asset_name is None:
+            result = await self.collection.delete_many({
+                "asset_project_id": project_id,
+            })
+
+        else:
+            result = await self.collection.delete_many({
+                "asset_project_id": project_id,
+                "asset_name": asset_name
+            })
+
+
+        return result.deleted_count

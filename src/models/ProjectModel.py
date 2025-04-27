@@ -1,6 +1,7 @@
 from .BaseDataModel import BaseDataModel
 from .db_schemes import Project
 from .enums.DataBaseEnum import DataBaseEnum
+from bson.objectid import ObjectId
 
 class ProjectModel(BaseDataModel):
 
@@ -67,3 +68,21 @@ class ProjectModel(BaseDataModel):
             )
 
         return projects, total_pages
+    
+    async def get_project(self, project_id: str):
+
+        record = await self.collection.find_one({
+            "project_id": project_id
+        })
+
+        if record is None:
+            return None
+
+        return Project(**record)
+    
+    async def delete_project(self, project_id: str):
+        result = await self.collection.delete_one({
+            "project_id": project_id
+        })
+
+        return result.deleted_count

@@ -11,4 +11,9 @@ class ResponseSignal(Enum):
     FILE_PROCESS_SUCCESS = 'file_process_success'
     FILE_ID_ERROR = 'file_not_found'
     NO_FILES_ERROR = 'no_files_in_project'
+    PROJECT_NOT_FOUND = 'project_not_exist'
+    ASSET_DELETED_SUCCESS = 'asset_deleted_success'
+    Project_DELETED_SUCCESS = 'project_deleted_success'
+    ASSET_NAME_ERROR = 'asset_name_is_not_valid'
+    ASSET_NOT_FOUND = 'asset_name_not_found'
 

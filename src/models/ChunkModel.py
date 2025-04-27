@@ -59,10 +59,17 @@ class ChunkModel(BaseDataModel):
 
         return len(chunks)
     
-    async def delete_project_chunks(self, project_id: ObjectId):
-        result = await self.collection.delete_many({
-            "chunk_project_id": project_id
-        })
+    async def delete_project_chunks(self, project_id: ObjectId, asset_id: ObjectId = None):
+
+        if asset_id is None:
+            result = await self.collection.delete_many({
+                "chunk_project_id": project_id,
+            })
+        else:
+            result = await self.collection.delete_many({
+                "chunk_project_id": project_id,
+                "chunk_asset_id": asset_id,
+            })
 
         return result.deleted_count
 

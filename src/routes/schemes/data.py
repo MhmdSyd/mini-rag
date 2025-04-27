@@ -7,3 +7,6 @@ class ProcessRequest(BaseModel):
     overlap_size: Optional[int] = 20
     do_reset: Optional[int] = 0
 
+
+class DeleteRequest(BaseModel): 
+    file_id: str = None
