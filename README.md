@@ -47,7 +47,7 @@ Set your environment variables in the `.env` file. Like `OPENAI_API_KEY` value.
 $ uvicorn main:app --reload --host 0.0.0.0 --port 5000
 ```
 
-## For documented end-points using Swagger:
+## For documented endpoints using Swagger:
 
 ```bash
 $ http://127.0.0.1:8080/docs
