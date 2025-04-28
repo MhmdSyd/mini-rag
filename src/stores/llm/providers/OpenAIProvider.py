@@ -13,7 +13,7 @@ class OpenAIProvider(LLMInterface):
         self.api_key = api_key
         self.api_url = api_url
         self.default_input_max_characters = default_input_max_characters
-        self.default_generation_max_outputs_tokens = default_generation_max_output_tokens
+        self.default_generation_max_output_tokens = default_generation_max_output_tokens
         self.default_generation_temperature = default_generation_temperature
 
         self.generation_model_id = None 
@@ -22,8 +22,10 @@ class OpenAIProvider(LLMInterface):
 
         self.client = OpenAI(
             api_key=self.api_key,
-            base_url=self.api_url
+            base_url=self.api_url if self.api_url and len(self.api_url) else None
         )
+
+        self.enums = OpenAIEnums
 
         self.logger = logging.getLogger(__name__)
 
@@ -36,16 +38,16 @@ class OpenAIProvider(LLMInterface):
         self.embedding_size = embedding_size
 
 
-    def generation_text(self, prompt: str, chat_history: list=[],  max_output_token: int=None, temperature: float=None):
+    def generate_text(self, prompt: str, chat_history: list=[],  max_output_token: int=None, temperature: float=None):
         if not self.client:
             self.logger.error("OpenAI client was not set")
             return None
         
-        if not self.embedding_model_id:
-            self.logger.error("Embedding model for OpenAI was not set")
+        if not self.generation_model_id:
+            self.logger.error("Generation model for OpenAI was not set")
             return None
         
-        max_output_tokens = max_output_tokens if max_output_tokens else self.default_generation_max_output_tokens
+        max_output_tokens = max_output_token if max_output_token else self.default_generation_max_output_tokens
         temperature = temperature if temperature else self.default_generation_temperature
 
         chat_history.append(self.construct_prompt(prompt=prompt, role=OpenAIEnums.USER.value))
@@ -61,7 +63,7 @@ class OpenAIProvider(LLMInterface):
             self.logger.error("Error while generating text with OpenAI")
             return None
         
-        return response.choices[0].message["content"]
+        return response.choices[0].message.content
     
     def process_text(self, text: str):
         return text.strip()[:self.default_input_max_characters]
