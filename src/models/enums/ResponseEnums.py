@@ -18,3 +18,6 @@ class ResponseSignal(Enum):
     ASSET_NOT_FOUND = 'asset_name_not_found'
     INSERT_INTO_VECTORDB_ERROR = 'vector_insert_failed'
     INSERT_INTO_VECTORDB_SUCCESS = 'vector_insert_success'
+    VECTORDB_COLLECTION_RETRIVED = 'vectordb_collection_retrieved'
+    VECTORDB_SEARCH_SUCCESS = 'vectordb_search_success'
+    VECTORDB_SEARCH_ERROR = 'vectordb_search_failed'
