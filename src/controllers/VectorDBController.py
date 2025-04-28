@@ -115,7 +115,9 @@ class VectorDBController(BaseController):
             for indx, doc in enumerate(retrieved_documents)
         ])             
 
-        footer_prompt = self.template_parser.get("rag", "footer_prompt")
+        footer_prompt = self.template_parser.get("rag", "footer_prompt", {
+            "query": query,
+        })
 
         # step3: Construct Generation Client Prompts
         chat_history = [
