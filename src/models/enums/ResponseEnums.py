@@ -16,4 +16,5 @@ class ResponseSignal(Enum):
     Project_DELETED_SUCCESS = 'project_deleted_success'
     ASSET_NAME_ERROR = 'asset_name_is_not_valid'
     ASSET_NOT_FOUND = 'asset_name_not_found'
-
+    INSERT_INTO_VECTORDB_ERROR = 'vector_insert_failed'
+    INSERT_INTO_VECTORDB_SUCCESS = 'vector_insert_success'
