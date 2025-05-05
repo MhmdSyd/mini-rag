@@ -23,7 +23,7 @@ data_router = APIRouter(
 )
 
 @data_router.post('/upload/{project_id}')
-async def upload_data(request: Request, project_id: str, file: UploadFile, app_settings: Settings = Depends(get_settings)):
+async def upload_data(request: Request, project_id: int, file: UploadFile, app_settings: Settings = Depends(get_settings)):
 
 
     project_model = await ProjectModel.create_instance(
@@ -31,7 +31,7 @@ async def upload_data(request: Request, project_id: str, file: UploadFile, app_s
     )
 
     project = await project_model.get_project_or_create_one(project_id=project_id)
-
+    
     # Validation the file properties.
     data_controller = DataController()
     is_valid, result_signal = data_controller.validate_uploaded_file(file=file)
@@ -87,13 +87,13 @@ async def upload_data(request: Request, project_id: str, file: UploadFile, app_s
             'signal': ResponseSignal.FILE_UPLOAD_SUCCESS.value,
             'file_id': new_filename,
             'project_id': str(project.get_id()),
-            'asset_record': str(asset_record.id)
+            'asset_record': str(asset_record.get_id()),
         }
     )
 
 
 @data_router.post('/process/{project_id}')
-async def process_data(request: Request, project_id: str, process_request: ProcessRequest):
+async def process_data(request: Request, project_id: int, process_request: ProcessRequest):
 
     chunk_size = process_request.chunk_size
     overlap_size = process_request.overlap_size
@@ -136,7 +136,7 @@ async def process_data(request: Request, project_id: str, process_request: Proce
         )
 
         project_files_ids = {
-            record.id: record.asset_name
+            record.get_id(): record.asset_name
             for record in project_files
         }
 
@@ -159,7 +159,7 @@ async def process_data(request: Request, project_id: str, process_request: Proce
 
     if do_reset == 1:
         _ = await chunk_model.delete_project_chunks(
-            project_id=project.id
+            project_id=project.get_id()
         )
 
     for asset_id, file_id in project_files_ids.items():
@@ -216,7 +216,7 @@ async def process_data(request: Request, project_id: str, process_request: Proce
     )
 
 @data_router.delete("/delete-asset/{project_id}")
-async def delete_project(request: Request, project_id: str, delete_request: DeleteRequest):
+async def delete_project(request: Request, project_id: int, delete_request: DeleteRequest):
     file_id = delete_request.file_id
 
     project_model = await ProjectModel.create_instance(
@@ -283,7 +283,7 @@ async def delete_project(request: Request, project_id: str, delete_request: Dele
     )
 
 @data_router.delete("/delete-project/{project_id}")
-async def delete_project(request: Request, project_id: str):
+async def delete_project(request: Request, project_id: int):
 
     project_model = await ProjectModel.create_instance(
         db_client=request.app.db_client
@@ -317,7 +317,7 @@ async def delete_project(request: Request, project_id: str):
     )
 
     no_deleted_project = await project_model.delete_project(
-        project_id=project.project_id,
+        project_id=project.get_id(),
     )
 
     return JSONResponse(

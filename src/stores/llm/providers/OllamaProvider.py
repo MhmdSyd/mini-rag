@@ -64,15 +64,11 @@ class OllamaProvider(LLMInterface):
             return None
         
         return response.message.content
-    
-    def process_text(self, text: str):
-        return text.strip()[:self.default_input_max_characters]
-    
 
     def construct_prompt(self, prompt: str, role: str):
         return {
             "role": role,
-            "content": self.process_text(prompt)
+            "content": prompt
         }
     
     def embed_text(self, text: str, document_type: str = None):

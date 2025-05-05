@@ -64,10 +64,6 @@ class OpenAIProvider(LLMInterface):
             return None
         
         return response.choices[0].message.content
-    
-    def process_text(self, text: str):
-        return text.strip()[:self.default_input_max_characters]
-
 
     def embed_text(self, text: str, document_type: str = None):
         
@@ -94,5 +90,5 @@ class OpenAIProvider(LLMInterface):
     def construct_prompt(self, prompt: str, role: str):
         return {
             "role": role,
-            "content": self.process_text(prompt)
+            "content": prompt
         }

@@ -32,9 +32,6 @@ class CoHereProvider(LLMInterface):
     def set_embedding_model(self, model_id: str, embedding_size: int):
         self.embedding_model_id = model_id
         self.embedding_size = embedding_size
-
-    def process_text(self, text: str):
-        return text.strip()[:self.default_input_max_characters]
     
     def generate_text(self, prompt: str, chat_history: list=[], max_output_tokens: int=None,
                             temperature: float = None):
@@ -53,7 +50,7 @@ class CoHereProvider(LLMInterface):
         response = self.client.chat(
             model = self.generation_model_id,
             chat_history = chat_history,
-            message = self.process_text(prompt),
+            message = prompt,
             temperature = temperature,
             max_tokens = max_output_tokens
         )

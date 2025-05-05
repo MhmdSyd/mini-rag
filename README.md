@@ -1,14 +1,14 @@
 # mini-rag
 
-**mini-rag** is a minimal yet powerful Retrieval-Augmented Generation (RAG) system built using FastAPI. It allows users to chat with a Large Language Model (LLM) using their own documents as contextual knowledge. This system supports multiple LLM backends and integrates MongoDB and Qdrant to manage and retrieve documents efficiently.
+**mini-rag** is a minimal yet powerful Retrieval-Augmented Generation (RAG) system built using FastAPI. It allows users to chat with a Large Language Model (LLM) using their own documents as contextual knowledge. This system supports multiple LLM backends and integrates Postgres and Qdrant to manage and retrieve documents efficiently.
 
 ---
 
 ## 🧰 Tech Stack
 
 - **FastAPI** – Backend API framework
-- **MongoDB** – Stores uploaded files, chunked documents, and metadata
-- **Docker** – Manages MongoDB service.
+- **Postgres** – Stores uploaded files, chunked documents, and metadata
+- **Docker** – Manages Postgres service.
 - **Qdrant** – Vector database for semantic search of document chunks
 - **LLMs Supported**:
   - OpenAI (GPT)
@@ -103,11 +103,11 @@ $ cp .env.example .env
 
 - Update `.env` with your credentials.
 
-### Install MongoDB docker service:
+### Install Postgres docker service:
 
 ```bash
 $ cd docker
-$ docker compose up --build # --build use it once at the first time.
+$ docker compose up pgvector --build # --build use it once at the first time.
 # use -d to run docker service in background 
 ```
 
