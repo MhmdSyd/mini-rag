@@ -26,7 +26,7 @@ class LLMProviderFactory:
         
         if provider == LLMEnums.OLLAMA.value:
             return OllamaProvider(
-                api_key = self.config.OPENAI_API_KEY,
+                api_key = self.config.OLLAMA_API_KEY,
                 api_url = self.config.OLLAMA_API_URL,
                 default_input_max_characters=self.config.INPUT_DAFAULT_MAX_CHARACTERS,
                 default_generation_max_output_tokens=self.config.GENERATION_DAFAULT_MAX_TOKENS,

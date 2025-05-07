@@ -8,7 +8,7 @@ from routes.schemes.vectordb import PushRequest, SearchRequest
 from models.ProjectModel import ProjectModel
 from models.ChunkModel import ChunkModel
 from models.db_schemes import DataChunk
-
+from tqdm.auto import tqdm
 import logging
 
 logger = logging.getLogger('uvicorn.error')
@@ -50,6 +50,22 @@ async def index_project(request: Request, project_id: int, push_request: PushReq
     inserted_items_count = 0
     indx = 0
 
+
+
+    # create collection if not exists
+    collection_name = vectordb_controller.create_collection_name(project_id=project.project_id)
+
+    _ = await request.app.vectordb_client.create_collection(
+        collection_name=collection_name,
+        embedding_size=request.app.embedding_client.embedding_size,
+        do_reset=push_request.do_reset,
+    )
+
+    # setup batching
+    total_chunks_count = await chunk_model.get_total_chunks_count(project_id=project.project_id)
+    pbar = tqdm(total=total_chunks_count, desc="Vector Indexing", position=0)
+
+
     while has_record:
         page_chunks = await chunk_model.get_project_chunks(project_id=project.get_id(), page_no=page_no)
         if len(page_chunks):
@@ -57,15 +73,15 @@ async def index_project(request: Request, project_id: int, push_request: PushReq
 
         if not page_chunks or len(page_chunks) == 0:
             has_record = False
+            print("enter page_chunk is Empty",page_chunks)
             break
 
-        chunks_ids =  list(range(indx, indx + len(page_chunks)))
+        chunks_ids =  [c.get_id() for c in page_chunks]
         indx += len(page_chunks)
         
-        is_inserted = vectordb_controller.index_into_vectordb(
+        is_inserted = await vectordb_controller.index_into_vectordb(
             project=project,
             chunks=page_chunks,
-            do_reset=push_request.do_reset,
             chunks_ids=chunks_ids
         )
 
@@ -78,6 +94,7 @@ async def index_project(request: Request, project_id: int, push_request: PushReq
             )
         
         inserted_items_count += len(page_chunks)
+        pbar.update(len(page_chunks))
         
         return JSONResponse(
             status_code=status.HTTP_200_OK,
@@ -101,7 +118,7 @@ async def get_project_index_info(request: Request, project_id: int):
         template_parser=request.app.template_parser,
     )
 
-    collection_info = vectordb_controller.get_vector_db_collection_info(project=project)
+    collection_info = await vectordb_controller.get_vector_db_collection_info(project=project)
 
     return JSONResponse(
             status_code=status.HTTP_200_OK,
@@ -126,7 +143,7 @@ async def search_index(request: Request, project_id: int, search_request: Search
         template_parser=request.app.template_parser,
     )
 
-    result = vectordb_controller.search_vector_db_collection(
+    result = await vectordb_controller.search_vector_db_collection(
         project=project,
         text=search_request.text, 
         limit=search_request.limit
@@ -163,7 +180,7 @@ async def answer_index(request: Request, project_id: int, search_request: Search
         template_parser=request.app.template_parser,
     )
 
-    answer, full_prompt, chat_history = vectordb_controller.answer_rag_question(
+    answer, full_prompt, chat_history = await vectordb_controller.answer_rag_question(
         project=project,
         query=search_request.text,
         limit=search_request.limit,

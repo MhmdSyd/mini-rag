@@ -1,5 +1,9 @@
 ## Run Alembic Migrations
 
+```bash
+alembic init alembic
+```
+
 ### Configuration
 
 ```bash

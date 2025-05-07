@@ -14,6 +14,7 @@ import aiofiles
 import logging
 
 from .schemes.data import ProcessRequest, DeleteRequest
+from controllers import VectorDBController
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -105,6 +106,14 @@ async def process_data(request: Request, project_id: int, process_request: Proce
 
     project = await project_model.get_project_or_create_one(project_id=project_id)
 
+    vectordb_controller = VectorDBController(
+        vectordb_client=request.app.vectordb_client,
+        generation_client=request.app.generation_client,
+        embedding_client=request.app.embedding_client,
+        template_parser=request.app.template_parser,
+    )
+
+
     asset_model = await AssetModel.create_instance(
             db_client=request.app.db_client
         )
@@ -158,6 +167,12 @@ async def process_data(request: Request, project_id: int, process_request: Proce
                     )
 
     if do_reset == 1:
+
+        collection_name = vectordb_controller.create_collection_name(project_id=project.get_id())
+        # delete associated collection
+        _ = await request.app.vectordb_client.delete_collection(collection_name=collection_name)
+
+        # delete associated vectors collection
         _ = await chunk_model.delete_project_chunks(
             project_id=project.get_id()
         )
