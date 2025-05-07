@@ -2,6 +2,7 @@ from ..LLMInterface import LLMInterface
 from ..LLMEnums import OLLAMAEnums
 import ollama
 import logging 
+from typing import Union, List
 
 class OllamaProvider(LLMInterface):
 
@@ -71,23 +72,30 @@ class OllamaProvider(LLMInterface):
             "content": prompt
         }
     
-    def embed_text(self, text: str, document_type: str = None):
+    def embed_text(self, text: Union[str, List[str]], document_type: str = None):
         
         if not self.client:
             self.logger.error("Ollama client was not set")
             return None
         
+        if isinstance(text, str):
+            text = [text]
+        
         if not self.embedding_model_id:
             self.logger.error("Embedding model for Ollama was not set")
             return None
         
-        response = self.client.embeddings(
+        response = self.client.embed(
             model = self.embedding_model_id,
-            prompt=text,
+            input=text,
         )
 
-        if not response or not response["embedding"] or len(response["embedding"]) == 0:
+        if not response or not response["embeddings"] or len(response["embeddings"]) == 0:
             self.logger.error("Error while embedding text with OpenAI")
             return None
         
-        return response["embedding"]
+
+        # return [rec.embedding for rec in response.embeddings]        
+        return response["embeddings"]
+    
+    
