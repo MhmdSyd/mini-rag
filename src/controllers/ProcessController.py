@@ -3,9 +3,17 @@ from .ProjectController import ProjectController
 from models import ProcessEnums
 
 from langchain_community.document_loaders import TextLoader, PyMuPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
+from dataclasses import dataclass
+from typing import List
 import os
+
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+import tiktoken
+
+@dataclass
+class Document:
+    page_content: str
+    metadata: dict
 
 class ProcessController(BaseController):
 
@@ -44,13 +52,7 @@ class ProcessController(BaseController):
         return loader.load()
 
     def process_file_content(self, file_content: list, file_id: str,
-                            chunk_size: int, overlap_size: int):
-        
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap = overlap_size,
-            length_function = len,
-        )
+                            chunk_size: int=200, overlap_size: int=20):
 
         file_content_texts = []
         file_content_metadata = []
@@ -60,10 +62,37 @@ class ProcessController(BaseController):
             file_content_texts.append(page.page_content)
             file_content_metadata.append(page.metadata)
 
-        chunks = text_splitter.create_documents(
-            file_content_texts,
-            metadatas=file_content_metadata
+        chunks = self.process_simpler_splitter(
+            texts=file_content_texts,
+            metadatas=file_content_metadata,
+            chunk_size=chunk_size
         )
-        return chunks
         
+        return chunks
+    
+
+    def process_simpler_splitter(self, texts:List[str], metadatas: List[str], chunk_size: int, splitter_tag: str="\n\n"):
+
+        chunks = []
+        for text, metadata in zip(texts, metadatas):
+
+            if len(text) > chunk_size:
+                
+                _ = [
+                        chunks.append(Document(
+                            page_content=current_chunk.strip(),
+                            metadata=metadata
+                        )) for current_chunk in text.split(splitter_tag) if current_chunk.strip()
+                    ]
+            else:
+                chunks.append(Document(
+                    page_content=text.strip(),
+                    metadata=metadata
+                ))
+
+
+        return chunks
+
+
+
 
