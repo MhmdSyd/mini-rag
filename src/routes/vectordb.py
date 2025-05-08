@@ -73,7 +73,6 @@ async def index_project(request: Request, project_id: int, push_request: PushReq
 
         if not page_chunks or len(page_chunks) == 0:
             has_record = False
-            print("enter page_chunk is Empty",page_chunks)
             break
 
         chunks_ids =  [c.get_id() for c in page_chunks]
@@ -96,13 +95,13 @@ async def index_project(request: Request, project_id: int, push_request: PushReq
         inserted_items_count += len(page_chunks)
         pbar.update(len(page_chunks))
         
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content={
-                "signal": ResponseSignal.INSERT_INTO_VECTORDB_SUCCESS.value,
-                "inserted_items_count": inserted_items_count
-            }
-        )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "signal": ResponseSignal.INSERT_INTO_VECTORDB_SUCCESS.value,
+            "inserted_items_count": inserted_items_count
+        }
+    )
 
 @vectordb_router.post('/index/info/{project_id}')
 async def get_project_index_info(request: Request, project_id: int):
