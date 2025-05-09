@@ -8,7 +8,6 @@ from typing import List
 import os
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-import tiktoken
 
 @dataclass
 class Document:
