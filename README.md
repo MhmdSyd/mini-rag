@@ -22,15 +22,15 @@
 - 📁 Upload and store custom documents
 - ✂️ Automatically chunk and embed documents
 - 🧠 Chat with LLMs using relevant document context (RAG)
-- 🔍 Semantic search with Qdrant
-- 🔄 Multiple LLM provider support
+- 🔍 Semantic search with Qdrant and Pgvector
+- 🔄 Multiple LLM provider support (OpenAI, CoHere, Ollama)
 - 📑 API documentation available via Swagger UI: [http://127.0.0.1:5000/docs](http://127.0.0.1:5000/docs)
 
 ---
 
 ## Requirements
 
-- Python 3.8 or later
+- Python 3.10 or later
 
 
 #### Install Dependencies
