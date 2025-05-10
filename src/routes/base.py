@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter, Depends
 import os
+from fastapi.responses import RedirectResponse
 from helpers.config import get_settings, Settings
 
 base_router = APIRouter(
@@ -7,7 +8,7 @@ base_router = APIRouter(
     tags=['welcome']
 )
 
-@base_router.get('/')
+@base_router.get('/welcome')
 async def welcome(app_settings: Settings = Depends(get_settings)):
 
     
@@ -16,7 +17,8 @@ async def welcome(app_settings: Settings = Depends(get_settings)):
     
     return {
         'APP_NAME': APP_NAME,
-        'APP_VERSION': APP_VERSION
+        'APP_VERSION': APP_VERSION,
+        'API_DOCS_SWAGGER': 'http://localhost:8000/docs#',
+        'SOURCE_CODE': 'https://github.com/MhmdSyd/mini-rag',
     }
-
 

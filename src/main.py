@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from routes import base, data, vectordb
 from motor.motor_asyncio import AsyncIOMotorClient
 from helpers.config import get_settings
@@ -72,3 +73,7 @@ async def shutdown_app_span():
 app.include_router(base.base_router)
 app.include_router(data.data_router)
 app.include_router(vectordb.vectordb_router)
+
+@app.get("/")
+def redirect_root():
+    return RedirectResponse(url="/api/v1/welcome")
