@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     PRIMARY_LANG : str = "en"
     DEFAULT_LANG : str = "en"
 
+    SOURCE_CODE : str = ""
+
     class Config:
         env_file = '.env'
 

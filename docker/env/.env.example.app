@@ -52,3 +52,6 @@ VECTOR_DB_PGVECTOR_INDEX_THRESHOLD=100
 PRIMARY_LANG_LITERAL=["en", "ar"]
 PRIMARY_LANG = "en"
 DEFAULT_LANG = "en"
+
+# ===================Source Code===========================
+SOURCE_CODE="https://github.com/MhmdSyd/mini-rag"
